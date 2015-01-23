@@ -1,0 +1,29 @@
+{
+	"name": "volnix/jobber",
+	"description": "A slim library for printing typical CLI job output.",
+	"homepage": "https://github.com/volnix/jobber",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Nick Volgas",
+			"email": "n.volgas@gmail.com"
+		}
+	],
+	"autoload":{
+		"psr-4":{
+			"Volnix\\Jobber\\": "src/",
+			"Volnix\\Jobber\\Tests\\": "tests/"
+		}
+	},
+
+	"require": {
+		"php": ">= 5.4",
+		"kevinlebrun/colors.php": "~0.4.0"
+	},
+
+	"require-dev": {
+		"phpunit/phpunit": "~4.0"
+	},
+
+	"minimum-stability": "dev"
+}

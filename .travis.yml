@@ -1,0 +1,20 @@
+language: php
+
+php:
+  - 5.6
+  - 5.5
+  - 5.4
+  - hhvm
+
+before_script:
+  - composer self-update
+  - composer install
+
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml --coverage-text
+
+matrix:
+  allow_failures:
+    - php: hhvm
+    - php: 5.6
