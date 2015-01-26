@@ -156,5 +156,18 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNotRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output2);
 		$this->assertNotRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output2);
 	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testBadMessageThrowsException()
+	{
+		ob_start();
+		Printer::start('test');
+
+		$junk = new \stdClass;
+		Printer::info($junk);
+		ob_clean();
+	}
 }
  
