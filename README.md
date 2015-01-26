@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/volnix/jobber.svg?branch=1.0.0)](https://travis-ci.org/volnix/jobber)
+
 # Jobber
 
 "Jobber" is a super-slim library for printing output from a CLI job.  It supports command-line colors through the use of [kevinlebrun/colors.php](https://packagist.org/packages/kevinlebrun/colors.php), a well-revered CLI color library.
