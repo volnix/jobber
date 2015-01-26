@@ -23,6 +23,9 @@ class Printer {
 	/** @var string $end The ending time of the job */
 	private static $end     = "";
 
+	/** @var bool $stopped Whether or not the job has been stopped */
+	private static $stopped = true;
+
 	/**
 	 * Start the job.  Optional $job_name argument for the name of this job.
 	 *
@@ -41,6 +44,7 @@ class Printer {
 		);
 
 		static::$output .= $message;
+		static::$stopped = false;
 		print $message;
 	}
 
@@ -51,17 +55,26 @@ class Printer {
 	 */
 	public static function stop()
 	{
-		static::$end = microtime();
-		$message = sprintf("%s%s - Execution Time: %.1f seconds / Peak memory usage: %.2f Mb%s***************************************************%s",
-			PHP_EOL,
-			(new \DateTime)->format('Y-m-d H:i:s'),
-			self::getExecutionTime(),
-			self::getMemoryUsageInMb(),
-			PHP_EOL,
-			PHP_EOL
-		);
+		// only print this stuff out if the job is in a running state
+		if ( ! static::$stopped ) {
 
-		static::$output .= $message;
+			static::$end = microtime();
+			$message = sprintf("%s%s - Execution Time: %.1f seconds / Peak memory usage: %.2f Mb%s***************************************************%s",
+				PHP_EOL,
+				(new \DateTime)->format('Y-m-d H:i:s'),
+				self::getExecutionTime(),
+				self::getMemoryUsageInMb(),
+				PHP_EOL,
+				PHP_EOL
+			);
+
+			static::$output .= $message;
+			static::$stopped = true;
+
+		} else {
+			$message = "";
+		}
+
 		print $message;
 	}
 
@@ -94,7 +107,8 @@ class Printer {
 	 */
 	public static function warning($message)
 	{
-		$output = sprintf('WARNING: %s - %s', (new \DateTime)->format('Y-m-d H:i:s'), $message);
+		$output = self::buildMessage($message, 'WARNING');
+
 		$color = new Color;
 		echo $color($output)->bg('yellow')->black() . PHP_EOL;
 
@@ -109,7 +123,8 @@ class Printer {
 	 */
 	public static function success($message)
 	{
-		$output = sprintf('SUCCESS: %s - %s', (new \DateTime)->format('Y-m-d H:i:s'), $message);
+		$output = self::buildMessage($message, 'SUCCESS');
+
 		$color = new Color;
 		echo $color($output)->bg('green')->bold()->black() . PHP_EOL;
 
@@ -117,14 +132,14 @@ class Printer {
 	}
 
 	/**
-	 * Print a an informational message.  Will not print to CLI if verbosity is disabled.
+	 * Print an informational message.  Will not print to CLI if verbosity is disabled.
 	 *
 	 * @param $message
 	 * @return void
 	 */
 	public static function info($message)
 	{
-		$output = sprintf('INFO: %s - %s', (new \DateTime)->format('Y-m-d H:i:s'), $message);
+		$output = self::buildMessage($message, 'INFO');
 
 		if (static::$verbose === true) {
 			$color = new Color;
@@ -135,6 +150,24 @@ class Printer {
 	}
 
 	/**
+	 * Print an error message.
+	 *
+	 * @param $message
+	 * @return void
+	 */
+	public static function error($message)
+	{
+		$output = self::buildMessage($message, 'ERROR');
+
+		$color = new Color;
+		echo $color($output)->bg('red')->bold()->white() . PHP_EOL;
+		self::$output .= $output . PHP_EOL;
+
+		// call stop since this is a dying message
+		self::stop();
+	}
+
+	/**
 	 * Print a fatal message and call Printer::stop().
 	 *
 	 * @param $message
@@ -142,11 +175,8 @@ class Printer {
 	 */
 	public static function fatal($message)
 	{
-		$output = sprintf('FATAL: %s - %s', (new \DateTime)->format('Y-m-d H:i:s'), $message);
-
-		$color = new Color;
-		echo $color($output)->bg('red')->bold()->white() . PHP_EOL;
-		self::$output .= $output . PHP_EOL;
+		// print an error
+		self::error($message);
 
 		// call stop since this is a dying message
 		self::stop();
@@ -204,6 +234,33 @@ class Printer {
 		static::$output     = "";
 		static::$start      = "";
 		static::$end        = "";
+		static::$stopped    = true;
 	}
+
+	private static function buildMessage($message, $type = "")
+	{
+		// validate our message first
+		if (!is_scalar($message) && !is_array($message)) {
+			throw new \InvalidArgumentException("Invalid message type.  Message must be string or array.");
+		}
+
+		$messages = [];
+
+		if (is_array($message)) {
+
+			// iterate, building each message
+			foreach ($message as $msg) {
+				$messages[] = sprintf('%s: %s - %s', $type, (new \DateTime)->format('Y-m-d H:i:s'), $msg);
+			}
+
+		} else {
+
+			$messages[] = sprintf('%s: %s - %s', $type, (new \DateTime)->format('Y-m-d H:i:s'), $message);
+
+		}
+
+		return implode(PHP_EOL, $messages);
+	}
+
 
 } 

@@ -45,25 +45,45 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, Printer::getExecutionTime());
 	}
 
-	public function testMessages()
+	public function testStringMessages()
 	{
 		ob_start();
 		Printer::start('test_name');
 		Printer::info('foo');
 		Printer::warning('bar');
 		Printer::success('baz');
-		Printer::fatal('qux');
+		Printer::error('qux');
 		$output = ob_get_clean();
 
 		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', $output);
 		$this->assertRegExp('/WARNING\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', $output);
 		$this->assertRegExp('/SUCCESS\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- baz/', $output);
-		$this->assertRegExp('/FATAL\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- qux/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- qux/', $output);
 
 		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', Printer::getOutput());
 		$this->assertRegExp('/WARNING\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', Printer::getOutput());
 		$this->assertRegExp('/SUCCESS\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- baz/', Printer::getOutput());
-		$this->assertRegExp('/FATAL\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- qux/', Printer::getOutput());
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- qux/', Printer::getOutput());
+	}
+
+	public function testArrayMessages()
+	{
+		ob_start();
+		Printer::start('test_name');
+		Printer::info(['foo', 'bar']);
+		Printer::warning(['foo', 'bar']);
+		Printer::success(['foo', 'bar']);
+		Printer::error(['foo', 'bar']);
+		$output = ob_get_clean();
+
+		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', $output);
+		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', $output);
+		$this->assertRegExp('/WARNING\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', $output);
+		$this->assertRegExp('/WARNING\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', $output);
+		$this->assertRegExp('/SUCCESS\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', $output);
+		$this->assertRegExp('/SUCCESS\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar/', $output);
 	}
 
 	public function testVerbosityOnOff()
@@ -78,5 +98,63 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', Printer::getOutput());
 	}
 
+	public function testFatalError()
+	{
+		ob_start();
+		Printer::start('test_name');
+		Printer::fatal('error_text');
+		$output = ob_get_clean();
+
+		$this->assertNotEmpty($output);
+		$this->assertRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output);
+		$this->assertRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- error_text/', $output);
+
+		$output = Printer::getOutput();
+		$this->assertNotEmpty($output);
+		$this->assertRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output);
+		$this->assertRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- error_text/', Printer::getOutput());
+	}
+
+	public function testMemoryFunctions()
+	{
+		$this->assertInternalType('float', Printer::getMemoryUsageInMb());
+		$this->assertInternalType('float', Printer::getMemoryUsageInKb());
+	}
+
+	public function testStopTextOnlyPrintsOnce()
+	{
+		ob_start();
+		Printer::start('test_name');
+		Printer::stop();
+		$output = ob_get_clean();
+
+		$this->assertRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output);
+		$this->assertRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output);
+
+		ob_start();
+		Printer::stop();
+		$output2 = ob_get_clean();
+
+		$this->assertNotRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output2);
+		$this->assertNotRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output2);
+
+		ob_start();
+		Printer::start('test_name');
+		Printer::fatal('foo');
+		$output = ob_get_clean();
+
+		$this->assertRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output);
+		$this->assertRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output);
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- foo/', Printer::getOutput());
+
+		ob_start();
+		Printer::stop();
+		$output2 = ob_get_clean();
+
+		$this->assertNotRegExp('/Execution Time\: [0-9]+\.[0-9]+ seconds/', $output2);
+		$this->assertNotRegExp('/Peak memory usage\: [0-9]+\.[0-9]+ Mb/', $output2);
+	}
 }
  
