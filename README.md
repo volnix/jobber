@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/volnix/jobber.svg?branch=1.0.0)](https://travis-ci.org/volnix/jobber)
+[![Build Status](https://travis-ci.org/volnix/jobber.svg?branch=master)](https://travis-ci.org/volnix/jobber)
 
 # Jobber
 
