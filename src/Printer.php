@@ -189,7 +189,7 @@ class Printer {
 	 */
 	public static function getMemoryUsageInMb()
 	{
-		return (memory_get_peak_usage() / 1024 / 1024);
+		return (float) (memory_get_peak_usage() / 1024 / 1024);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class Printer {
 	 */
 	public static function getMemoryUsageInKb()
 	{
-		return (memory_get_peak_usage() / 1024);
+		return (float) (memory_get_peak_usage() / 1024);
 	}
 
 	/**
