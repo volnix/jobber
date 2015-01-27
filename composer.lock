@@ -4,11 +4,11 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f3338c515d651d254a048b08f7a9cba5",
+    "hash": "898835b7e26f7b7903e5afe247d864be",
     "packages": [
         {
             "name": "kevinlebrun/colors.php",
-            "version": "dev-master",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kevinlebrun/colors.php.git",
@@ -475,9 +475,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "kevinlebrun/colors.php": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
