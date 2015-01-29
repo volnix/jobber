@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/volnix/jobber.svg?style=flat-square)](https://travis-ci.org/volnix/jobber) [![Donwloads](https://img.shields.io/packagist/dt/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Latest Stable Version](https://img.shields.io/packagist/v/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Code Coverage](https://scrutinizer-ci.com/g/volnix/jobber/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/volnix/jobber/?branch=master)
+[![Build Status](https://img.shields.io/travis/volnix/jobber.svg?style=flat-square)](https://travis-ci.org/volnix/jobber) [![Donwloads](https://img.shields.io/packagist/dt/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Latest Stable Version](https://img.shields.io/packagist/v/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/volnix/jobber.svg?style=flat-square)](https://scrutinizer-ci.com/g/volnix/jobber/?branch=master)
 
 # Jobber
 
