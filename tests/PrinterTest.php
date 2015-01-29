@@ -12,9 +12,20 @@ use Volnix\Jobber\Printer;
 
 class PrinterTest extends \PHPUnit_Framework_TestCase {
 
+	public function setUp()
+	{
+		// start our buffer to trap any printer output
+		ob_start();
+	}
+
+	public function tearDown()
+	{
+		// make sure to clean the output buffer from any printing that happened in the previous method
+		ob_clean();
+	}
+
 	public function testStartStop()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::stop();
 		$output = ob_get_clean();
@@ -33,7 +44,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testStartStopReset()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::stop();
 
@@ -47,7 +57,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testStringMessages()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::info('foo');
 		Printer::warning('bar');
@@ -68,7 +77,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testArrayMessages()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::info(['foo', 'bar']);
 		Printer::warning(['foo', 'bar']);
@@ -88,7 +96,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testVerbosityOnOff()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::setVerbosity(false);
 		Printer::info('foo');
@@ -100,7 +107,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFatalError()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::fatal('error_text');
 		$output = ob_get_clean();
@@ -125,7 +131,6 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testStopTextOnlyPrintsOnce()
 	{
-		ob_start();
 		Printer::start('test_name');
 		Printer::stop();
 		$output = ob_get_clean();
@@ -162,12 +167,24 @@ class PrinterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testBadMessageThrowsException()
 	{
-		ob_start();
 		Printer::start('test');
 
 		$junk = new \stdClass;
 		Printer::info($junk);
-		ob_clean();
+	}
+
+	public function testTokenizedMessage()
+	{
+		Printer::info('%s foo %s', ['bar', 'qux']);
+		Printer::error('%s foo %s', ['bar', 'qux']);
+		Printer::success('%s foo %s', ['bar', 'qux']);
+		Printer::warning('%s foo %s', ['bar', 'qux']);
+		ob_get_clean();
+
+		$this->assertRegExp('/INFO\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar foo qux/', Printer::getOutput());
+		$this->assertRegExp('/ERROR\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar foo qux/', Printer::getOutput());
+		$this->assertRegExp('/SUCCESS\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar foo qux/', Printer::getOutput());
+		$this->assertRegExp('/WARNING\: [0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \- bar foo qux/', Printer::getOutput());
 	}
 }
  

@@ -11,6 +11,14 @@ use Colors\Color;
 
 class Printer {
 
+	const TYPE_ERROR    = 'ERROR';
+
+	const TYPE_WARNING  = 'WARNING';
+
+	const TYPE_SUCCESS  = 'SUCCESS';
+
+	const TYPE_INFO     = 'INFO';
+
 	/** @var bool $verbose Whether verbosity is turned on or not */
 	private static $verbose = true;
 
@@ -103,11 +111,12 @@ class Printer {
 	 * Print a warning message.
 	 *
 	 * @param $message
+	 * @param $replacements
 	 * @return void
 	 */
-	public static function warning($message)
+	public static function warning($message, array $replacements = [])
 	{
-		$output = self::buildMessage($message, 'WARNING');
+		$output = self::buildMessage($message, $replacements, self::TYPE_WARNING);
 
 		$color = new Color;
 		echo $color($output)->bg('yellow')->black() . PHP_EOL;
@@ -118,12 +127,13 @@ class Printer {
 	/**
 	 * Print a success message.
 	 *
-	 * @param $message
+	 * @param string|array $message
+	 * @param array $replacements
 	 * @return void
 	 */
-	public static function success($message)
+	public static function success($message, array $replacements = [])
 	{
-		$output = self::buildMessage($message, 'SUCCESS');
+		$output = self::buildMessage($message, $replacements, self::TYPE_SUCCESS);
 
 		$color = new Color;
 		echo $color($output)->bg('green')->bold()->black() . PHP_EOL;
@@ -134,12 +144,13 @@ class Printer {
 	/**
 	 * Print an informational message.  Will not print to CLI if verbosity is disabled.
 	 *
-	 * @param $message
+	 * @param string|array $message
+	 * @param array $replacements
 	 * @return void
 	 */
-	public static function info($message)
+	public static function info($message, array $replacements = [])
 	{
-		$output = self::buildMessage($message, 'INFO');
+		$output = self::buildMessage($message, $replacements, self::TYPE_INFO);
 
 		if (static::$verbose === true) {
 			$color = new Color;
@@ -152,31 +163,31 @@ class Printer {
 	/**
 	 * Print an error message.
 	 *
-	 * @param $message
+	 * @param string|array $message
+	 * @param array $replacements
 	 * @return void
 	 */
-	public static function error($message)
+	public static function error($message, array $replacements = [])
 	{
-		$output = self::buildMessage($message, 'ERROR');
+		$output = self::buildMessage($message, $replacements, self::TYPE_ERROR);
 
 		$color = new Color;
 		echo $color($output)->bg('red')->bold()->white() . PHP_EOL;
-		self::$output .= $output . PHP_EOL;
 
-		// call stop since this is a dying message
-		self::stop();
+		self::$output .= $output . PHP_EOL;
 	}
 
 	/**
 	 * Print a fatal message and call Printer::stop().
 	 *
-	 * @param $message
+	 * @param string|array $message
+	 * @param array $replacements
 	 * @return void
 	 */
-	public static function fatal($message)
+	public static function fatal($message, array $replacements = [])
 	{
 		// print an error
-		self::error($message);
+		self::error($message, $replacements);
 
 		// call stop since this is a dying message
 		self::stop();
@@ -237,7 +248,16 @@ class Printer {
 		static::$stopped    = true;
 	}
 
-	private static function buildMessage($message, $type = "")
+	/**
+	 * Build our message with the input provided.
+	 *
+	 * @param string|array $message
+	 * @param array $replacements
+	 * @param string $type
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	private static function buildMessage($message, array $replacements = [], $type = "")
 	{
 		// validate our message first
 		if (!is_scalar($message) && !is_array($message)) {
@@ -253,10 +273,11 @@ class Printer {
 				$messages[] = sprintf('%s: %s - %s', $type, (new \DateTime)->format('Y-m-d H:i:s'), $msg);
 			}
 
+		} elseif (count($replacements) > 0) {
+			$parsed_message = vsprintf($message, $replacements);
+			$messages[] = sprintf('%s: %s - %s', $type, (new \DateTime)->format('Y-m-d H:i:s'), $parsed_message);
 		} else {
-
 			$messages[] = sprintf('%s: %s - %s', $type, (new \DateTime)->format('Y-m-d H:i:s'), $message);
-
 		}
 
 		return implode(PHP_EOL, $messages);
