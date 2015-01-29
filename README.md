@@ -1,7 +1,7 @@
 # Jobber
 
 
-[![Build Status](https://img.shields.io/travis/volnix/jobber.svg?style=flat-square)](https://travis-ci.org/volnix/jobber) [![Donwloads](https://img.shields.io/packagist/dt/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Latest Stable Version](https://img.shields.io/packagist/v/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/volnix/jobber.svg?style=flat-square)](https://scrutinizer-ci.com/g/volnix/jobber/?branch=master)
+[![Build Status](https://img.shields.io/travis/volnix/jobber.svg?style=flat-square)](https://travis-ci.org/volnix/jobber) [![Downloads](https://img.shields.io/packagist/dt/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Latest Stable Version](https://img.shields.io/packagist/v/volnix/jobber.svg?style=flat-square)](https://packagist.org/packages/volnix/jobber) [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/volnix/jobber.svg?style=flat-square)](https://scrutinizer-ci.com/g/volnix/jobber/?branch=master)
 
 
 ***Jobber*** is a super-slim library for printing output from a CLI job.  It supports command-line colors through the use of [kevinlebrun/colors.php](https://packagist.org/packages/kevinlebrun/colors.php), a well-revered CLI color library.
@@ -28,7 +28,7 @@ ERROR: 2015-01-23 15:52:35 - qux
 Command line:
 
 ```bash
-composer require volnix/jobber:1.*
+composer require volnix/jobber:~1.0
 ```
 
 composer.json:
@@ -37,7 +37,7 @@ composer.json:
 {
     "name": "your/application",
     "require": {
-        "volnix/jobber": "1.*"
+        "volnix/jobber": "~1.0"
     }
 }
 ```
