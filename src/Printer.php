@@ -20,19 +20,19 @@ class Printer {
 	const TYPE_INFO     = 'INFO';
 
 	/** @var bool $verbose Whether verbosity is turned on or not */
-	private static $verbose = true;
+	protected static $verbose   = true;
 
 	/** @var string $output A string containing all the output from the job */
-	private static $output  = "";
+	protected static $output    = "";
 
 	/** @var string $start The starting time of the job */
-	private static $start   = "";
+	protected static $start     = "";
 
 	/** @var string $end The ending time of the job */
-	private static $end     = "";
+	protected static $end       = "";
 
 	/** @var bool $stopped Whether or not the job has been stopped */
-	private static $stopped = true;
+	protected static $stopped   = true;
 
 	/**
 	 * Start the job.  Optional $job_name argument for the name of this job.
